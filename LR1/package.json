@@ -1,0 +1,16 @@
+{
+	"name": "lr1",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "node --no-warnings index.js",
+		"format": "prettier . --write"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"nodeplotlib": "^1.1.2"
+	}
+}
