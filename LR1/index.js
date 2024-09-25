@@ -17,11 +17,11 @@ function ask(query) {
 // Функция генерации случайной строки
 function genRandString(minLen, maxLen) {
 	const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen
-	const characters = `абвгдеёжзийклмнопрстуфхцчшщъыьэюя`
+	const chars = `абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ`
 	let result = ``
 
 	for (let i = 0; i < len; i++) {
-		result += characters.charAt(Math.floor(Math.random() * characters.length))
+		result += chars.charAt(Math.floor(Math.random() * chars.length))
 	}
 
 	return result
@@ -40,8 +40,13 @@ function genRandStringArr(count, minLen, maxLen) {
 
 // Функция чтения файла и разделения на массив слов
 function readToArr(filePath) {
-	const content = fs.readFileSync(filePath, `utf8`)
-	return content.split(/\s+/)
+	try {
+		const content = fs.readFileSync(filePath, `utf8`)
+		return content.split(/\s+/)
+	} catch (e) {
+		console.error(`Ошибка чтения файла:`, e)
+		return []
+	}
 }
 
 // Наивный алгоритм поиска (с подсчётом всех совпадений)
@@ -121,10 +126,10 @@ function computeLPSArr(pattern) {
 }
 
 // Функция измерения времени выполнения алгоритма
-function measurePerf(fn, textArray, pattern) {
+function measurePerf(fn, textArr, pattern) {
 	const start = performance.now()
 	let foundCount = 0
-	textArray.forEach(text => {
+	textArr.forEach(text => {
 		foundCount += fn(text, pattern)
 	})
 	const end = performance.now()
@@ -152,7 +157,7 @@ async function createChart(results) {
 }
 
 // Главная логика программы
-; (async () => {
+;(async () => {
 	try {
 		const minLen = parseInt(await ask(`Введите минимальную длину случайных строк: `)) || 3
 		const maxLen = parseInt(await ask(`Введите максимальную длину случайных строк: `)) || 10
