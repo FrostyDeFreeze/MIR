@@ -188,12 +188,12 @@ async function createChart(results) {
 			const wordsArr = textData.slice(0, size)
 
 			// Измерение времени для случайных строк
-			const randBruteResult = measurePerf(naiveSearch, randStringsArr, wordToFind)
-			const randKmpResult = measurePerf(kmpSearch, randStringsArr, wordToFind)
+			const randBruteResult = measurePerf(kmpSearch, randStringsArr, wordToFind)
+			const randKmpResult = measurePerf(naiveSearch, randStringsArr, wordToFind)
 
 			// Измерение времени для слов из файла
-			const wordsBruteResult = measurePerf(naiveSearch, wordsArr, wordToFind)
-			const wordsKmpResult = measurePerf(kmpSearch, wordsArr, wordToFind)
+			const wordsBruteResult = measurePerf(kmpSearch, wordsArr, wordToFind)
+			const wordsKmpResult = measurePerf(naiveSearch, wordsArr, wordToFind)
 
 			// Вывод результатов в консоль
 			console.log(`Brute Force (случайные строки): Время: ${randBruteResult.time.toFixed(3)}мс | Найдено слов: ${randBruteResult.foundCount}`)
