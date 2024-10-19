@@ -13,7 +13,7 @@ function ask(query) {
 
 // Функция для разметки слов (добавление символа </w>)
 function markWords(words) {
-	return words.map(word => word + ` </w>`).join(` `)
+	return words.map(word => word.split(``).join(` `) + ` </w>`).join(`\n`)
 }
 
 // Функция для построения частотного словаря биграмм
@@ -23,7 +23,12 @@ function getBigrams(wordList) {
 	wordList.forEach(word => {
 		const tokens = word.split(` `)
 
+		// Исключаем из биграмм символ конца слова </w>
 		for (let i = 0; i < tokens.length - 1; i++) {
+			if (tokens[i + 1] === `</w>`) {
+				continue
+			}
+
 			const bigram = `${tokens[i]} ${tokens[i + 1]}`
 
 			if (bigrams[bigram]) {
@@ -52,13 +57,14 @@ function getMostFrequentBigram(bigrams) {
 	return mostFrequentBigram
 }
 
-// Функция для обновления слов с объединенной биграммой
+// Функция для обновления слов с объединённой биграммой
 function mergeBigramInWords(wordList, bigram) {
 	if (!bigram) {
-		return wordList // Добавлена проверка на случай, если биграмм больше нет
+		return wordList
 	}
 
 	const [first, second] = bigram.split(` `)
+	// Объединяем только те биграммы, которые не включают </w>
 	return wordList.map(word => word.replace(new RegExp(`${first} ${second}`, `g`), `${first}${second}`))
 }
 
@@ -88,37 +94,37 @@ function printTable(iteration, symbolFrequencies, bigram, wordList) {
 	console.table(symbolFrequencies)
 	if (bigram) {
 		console.log(`Выбрана биграмма для объединения: ${bigram}`)
-		console.log(`Обновленные слова:`)
+		console.log(`Обновлённые слова:`)
 		wordList.forEach(word => console.log(word))
 	} else {
-		console.log(`Биграммы для объединения не найдены.`)
+		console.log(`Биграммы для объединения не найдены`)
 	}
 }
 
 // Главная логика программы
-; (async () => {
+;(async () => {
 	try {
 		// Ввод двух корпусов
 		const corpus1 = (await ask(`Введите первый корпус (7 слов через запятую): `)).split(`,`).map(word => word.trim())
 		const corpus2 = (await ask(`Введите второй корпус (7 слов через запятую): `)).split(`,`).map(word => word.trim())
 
 		// Разметка корпусов с добавлением </w>
-		let wordList1 = markWords(corpus1).split(` `)
-		let wordList2 = markWords(corpus2).split(` `)
+		let wordList1 = markWords(corpus1).split(`\n`)
+		let wordList2 = markWords(corpus2).split(`\n`)
 
 		// Выполнение 10 итераций BPE для каждого корпуса
 		for (let i = 1; i <= 10; i++) {
 			// Первый корпус
-			let symbolFrequencies1 = getSymbolFrequencies(wordList1)
-			let bigrams1 = getBigrams(wordList1)
-			let mostFrequentBigram1 = getMostFrequentBigram(bigrams1)
+			const symbolFrequencies1 = getSymbolFrequencies(wordList1)
+			const bigrams1 = getBigrams(wordList1)
+			const mostFrequentBigram1 = getMostFrequentBigram(bigrams1)
 			wordList1 = mergeBigramInWords(wordList1, mostFrequentBigram1)
 			printTable(i, symbolFrequencies1, mostFrequentBigram1, wordList1)
 
 			// Второй корпус
-			let symbolFrequencies2 = getSymbolFrequencies(wordList2)
-			let bigrams2 = getBigrams(wordList2)
-			let mostFrequentBigram2 = getMostFrequentBigram(bigrams2)
+			const symbolFrequencies2 = getSymbolFrequencies(wordList2)
+			const bigrams2 = getBigrams(wordList2)
+			const mostFrequentBigram2 = getMostFrequentBigram(bigrams2)
 			wordList2 = mergeBigramInWords(wordList2, mostFrequentBigram2)
 			printTable(i, symbolFrequencies2, mostFrequentBigram2, wordList2)
 		}
